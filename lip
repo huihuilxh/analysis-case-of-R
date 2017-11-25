@@ -10,8 +10,11 @@ library(jiebaR)
 library(jiebaRD)
 library(fmsb)
 lip<-read.csv("lipstick.csv",header = T)
+
 描述性分析
+
 销售量分布直方图
+
 sum(lip$总销量)
 ## [1] 715701
 lip1<-lip
@@ -32,6 +35,7 @@ p
 
 
 价格分布直方图
+
 lip2<-lip
 summary(lip2$价格)
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -50,6 +54,7 @@ p
 
 
 不同价格区间的销量对比图
+
 col=c("#085A9C","#EF0808","#526373")
 jia<-data.frame(price=c("100元以上","10-100","10元以下"),
                 cou=c(10563,679659,25479))
@@ -77,6 +82,7 @@ p
 
 
 口红色号出现频数
+
 mydata <- read.csv("lip.txt",stringsAsFactors = FALSE,header=FALSE)
 cutter <- worker()
 content <-as.character(mydata)   
@@ -113,6 +119,7 @@ p
 
 
 品牌产地个价格销量的关系
+
 lip3<-lip
 col=c("#085A9C","#EF0808","#526373")
 lip3<-lip3[lip3[,2]<900,]
@@ -144,6 +151,7 @@ p
 
 
 口红功效的蛛网图
+
 # 统计各关键词在每条记录中出现的次数，在除以总数得到占比
 zhanbi <- data.frame("保湿"=c(1,0,0.59),"易上色"=c(1,0,0.57),
                      "持久防脱色"=c(1,0,0.66),"美白亮肤"=c(1,0,0.30),
