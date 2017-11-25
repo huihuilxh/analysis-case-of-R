@@ -1,0 +1,153 @@
+# analysis-case-of-R
+
+准备工作
+library(stringr)  
+library(ggplot2)
+library(scales)
+library(RColorBrewer)  
+library(jiebaR)
+## Loading required package: jiebaRD
+library(jiebaRD)
+library(fmsb)
+lip<-read.csv("lipstick.csv",header = T)
+描述性分析
+销售量分布直方图
+sum(lip$总销量)
+## [1] 715701
+lip1<-lip
+summary(lip1$总销量)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     0.0     5.0    26.0   422.2   140.5 32192.0
+lip1<-lip1[lip1[,3]!=0,]
+#p<-ggplot(lip1,aes(x=log10(lip1$总销量)))    
+p<-ggplot(lip1,aes(x=lip1$总销量)) 
+p<-p+geom_histogram(binwidth = 1000,fill="cadetblue4",colour="black")
+p<-p+labs(x="销量",y="频数")
+p<-p+theme(legend.title = element_blank())
+p<-p+theme(axis.text.x = element_text(size =13,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =13,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 12,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 12,face="bold"))
+p
+
+
+价格分布直方图
+lip2<-lip
+summary(lip2$价格)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    6.93   29.00   44.20   63.54   61.74  999.00
+lip2<-lip2[lip2[,2]<400,]
+p<-ggplot(lip2,aes(x=lip2$价格))          
+p<-p+geom_histogram(fill="cadetblue4",colour="black")
+p<-p+labs(x="价格",y="频数")
+p<-p+theme(legend.title = element_blank())
+p<-p+theme(axis.text.x = element_text(size =13,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =13,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 12,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 12,face="bold"))
+p
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+
+不同价格区间的销量对比图
+col=c("#085A9C","#EF0808","#526373")
+jia<-data.frame(price=c("100元以上","10-100","10元以下"),
+                cou=c(10563,679659,25479))
+p<-ggplot(jia,aes(x=price,y=cou,fill=price))
+p<-p+geom_bar(stat = 'identity',show.legend = FALSE)
+p<-p+labs(x="价格区间",y="出现频数")
+p<-p+theme(legend.title=element_blank())
+p<-p+scale_fill_manual(values=col)
+p<-p+coord_flip()
+p
+
+
+p<-ggplot(data=lip,aes(lip$价格区间,lip$总销量,fill=lip$价格区间))  
+p<-p+geom_boxplot()
+p<-p+labs(x="价格区间",y="销量")
+p<-p+scale_x_discrete(limits = c("10元以下","10-100元","100元以上"))
+#p<-p+scale_y_discrete(limits = c(0,5000))
+p<-p+theme(legend.position = "none")
+p<-p+theme(axis.text.x = element_text(size =13,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =13,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 12,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 12,face="bold"))
+p<-p+scale_fill_manual(values=col)
+p
+
+
+口红色号出现频数
+mydata <- read.csv("lip.txt",stringsAsFactors = FALSE,header=FALSE)
+cutter <- worker()
+content <-as.character(mydata)   
+segWords <- segment(content,cutter) 
+
+segWords <- gsub("[0-9a-zA-Z]+?","",segWords)  
+segWords <- str_trim(segWords)       
+
+txt.asvector <- unlist(segWords)         
+tableWord <- table(txt.asvector)       
+Wordresult<- tableWord[order(-tableWord)]                       #将tableword降序排列，从多到少排序
+
+
+sehao<-data.frame(se=c("粉色","正红","玫红","珊瑚红","橘色",
+                       "豆沙红","樱桃红","橙色","姨妈红","裸色"),
+                  
+                  cou=c(1309,551,409,290,247,281,203,147,117,53))
+values=c("粉色"="#FF6666","正红"="#FF0000","玫红"="#FF00FF","珊瑚红"="#FF0033",
+         "橘色"="#FFCC00", "豆沙红"="#CC3333","樱桃红"="#FF3333","橙色"="#FF7F00",
+         "姨妈红"="#CC0033","裸色"="#FFFFCC")
+p<-ggplot(sehao,aes(x=reorder(se,cou),y=cou,
+                    fill=reorder(se,cou)))
+p<-p+geom_bar(stat = 'identity',show.legend = FALSE)
+p<-p+labs(x="色号",y="出现频数")
+p<-p+theme(axis.text.x = element_text(size =11,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =11,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 10,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 10,face="bold"))
+p<-p+theme(legend.title=element_blank())
+p<-p+scale_fill_manual(values=values,limits=c("粉色","正红","玫红","珊瑚红","橘色",
+                                              "豆沙红","樱桃红","橙色","姨妈红","裸色"))
+p<-p+coord_flip()
+p
+
+
+品牌产地个价格销量的关系
+lip3<-lip
+col=c("#085A9C","#EF0808","#526373")
+lip3<-lip3[lip3[,2]<900,]
+p<-ggplot(lip3,aes(x=lip3$国家1,y=lip3$价格,fill=lip3$国家1))
+p<-p+geom_boxplot(show.legend = FALSE)
+p<-p+scale_x_discrete(limits = c("中国内地","韩国","其他"))
+p<-p+labs(x="国家",y="价格")
+p<-p+theme(axis.text.x = element_text(size =13,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =13,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 12,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 12,face="bold"))
+p<-p+scale_fill_manual(values=col)
+p
+
+
+lipp<-data.frame(g=c("中国内地","韩国","其他"),
+                 l=c(51,16,4))                                   #真实值为157213,42554,515925，为作图美观，保留到万元
+p<-ggplot(lipp,aes(x=g,y=l,fill=g))
+p<-p+labs(x="国家",y="总销量")
+p<-p+scale_x_discrete(limits = c("中国内地","韩国","其他"))
+p<-p+theme(axis.text.x = element_text(size =13,face="bold"))
+p<-p+theme(axis.text.y = element_text(size =13,face="bold"))
+p<-p+theme(axis.title.x = element_text(size = 12,face="bold"))
+p<-p+theme(axis.title.y = element_text(size = 12,face="bold"))
+p<-p+geom_bar(stat = "identity",show.legend = FALSE)
+p<-p+scale_fill_manual(values=col)
+p<-p+theme(legend.text = element_text ("单位：万"),legend.position = "topleft")
+p
+
+
+口红功效的蛛网图
+# 统计各关键词在每条记录中出现的次数，在除以总数得到占比
+zhanbi <- data.frame("保湿"=c(1,0,0.59),"易上色"=c(1,0,0.57),
+                     "持久防脱色"=c(1,0,0.66),"美白亮肤"=c(1,0,0.30),
+                      "防晒"=c(1,0,0.07))                
+# radarchart函数要求数据的第一行和第二行分别为作图的最大值和最小值    
+radarchart(zhanbi,axistype=0,pcol=topo.colors(2),
+           plty=1,plwd=3,cglty=5,pty=0,vlcex=1.2)
